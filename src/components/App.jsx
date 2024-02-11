@@ -17,17 +17,17 @@ function App() {
   const [currentEditedAuction, setCurrentEditedAuction] = useState(null);
 
   useEffect(() => {
-    const storedOnPage = localStorage.getItem('onPage');
+    const storedOnPage = sessionStorage.getItem('onPage');
     if (storedOnPage) {
       setOnPage(storedOnPage);
     }
 
-    const storedCurrentAuction = localStorage.getItem('currentAuction');
+    const storedCurrentAuction = sessionStorage.getItem('currentAuction');
     if (storedCurrentAuction) {
       setCurrentAuction(storedCurrentAuction);
     }
 
-    const storedUserDataString = localStorage.getItem('userData');
+    const storedUserDataString = sessionStorage.getItem('userData');
     if (storedUserDataString) {
       const storedUserData = JSON.parse(storedUserDataString);
       setUserData(storedUserData);
