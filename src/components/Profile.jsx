@@ -1,8 +1,6 @@
 import { logout } from "../api/authApi"
 import { profile } from "../api/auctionApi"
 import { useEffect, useState } from "react"
-import Icon from '@mdi/react'
-import { mdiLinkedin, mdiTwitter, mdiFacebook, mdiYoutube, mdiLogout } from '@mdi/js'
 import '../styles/Profile.scss'
 import { delete_auction } from "../api/auctionApi"
 
@@ -12,32 +10,41 @@ function Profile({ userData, setUserData, setOnPage, setCurrentAuction, setCalle
 
     function logout_btn() {
         logout(userData.tokens.refresh, userData.tokens.access).then((data) => console.log(data));
-        setUserData({});
+        sessionStorage.removeItem('userData');
+        setUserData(null);
+        sessionStorage.setItem('onPage', 'init');
         setOnPage('init');
     }
 
     useEffect(() => {
-        profile(userData.tokens.access, userData.username).then((data) => {
+        profile(userData, setUserData, userData.username).then((data) => {
             setUserProfile(data);
         });
         setDeleted(false);
-    }, [userData.tokens.access, userData.username, deleted])
+    }, [userData.username, deleted, userData, setUserData])
 
     return (
         <>
         <nav className='main-nav'>
                 <div className="nav-btns">
-                    <button className='nav-btn' type='button' onClick={() => {setOnPage('init')}}>About auction</button>
-                    <button className='nav-btn' type='button' onClick={() => {setOnPage('allAuctions')}}>All lots</button>
+                    <button className='nav-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'init');
+                        setOnPage('init');
+                        }}>About auction</button>
+                    <button className='nav-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'allAuctions');
+                        setOnPage('allAuctions');
+                        }}>All lots</button>
                 </div>
                 <div className="profile-btns">
                 {/* <button className='profile-btn' type='button' onClick={() => {setOnPage('signUp')}}>Register</button> / <button className='profile-btn' type='button' onClick={() => {setOnPage('signIn')}}>Login</button> */}
                 <button className="logout-btn" type="button" onClick={() => {
                     setUserData({});
                     logout_btn();
+                    sessionStorage.setItem('onPage', 'init');
                     setOnPage('init');
                 }}>
-                    <p className="logout-text">Logout</p>
+                <p className="logout-text">Logout</p>
                 </button>
                 </div>
             </nav>
@@ -56,12 +63,14 @@ function Profile({ userData, setUserData, setOnPage, setCurrentAuction, setCalle
                         <div className="my-lot" key={auction.id}>
                             <p onClick={() => {
                                 setCurrentAuction(auction.id);
+                                sessionStorage.setItem('onPage', 'auctionInfo');
                                 setOnPage('auctionInfo');
                                 setCalledFrom('profile');
                             }}>{auction.title}</p>
                             <div className="lot-btns">
                                 <button className="lot-btn" type="button" onClick={() => {
                                     setCurrentEditedAuction(auction.id);
+                                    sessionStorage.setItem('onPage', 'editAuction');
                                     setOnPage('editAuction');
                                 }}>Edit</button>
                                 <button className="lot-btn" type="button" onClick={() => {
@@ -75,7 +84,10 @@ function Profile({ userData, setUserData, setOnPage, setCurrentAuction, setCalle
                     <p className="no-lots">You haven't created any lots.</p>
                 )}
             </div>
-            <button className="create-lot-btn" type='button' onClick={() => setOnPage('createAuction')}>Create lot</button>
+            <button className="create-lot-btn" type='button' onClick={() => {
+                sessionStorage.setItem('onPage', 'createAuction');
+                setOnPage('createAuction');
+                }}>Create lot</button>
         </div>
         <div className="my-participated-block">
             <p className="my-participated-header">Participated lots</p>
@@ -85,6 +97,7 @@ function Profile({ userData, setUserData, setOnPage, setCurrentAuction, setCalle
                         <div className="my-participated" key={auction.id}>
                         <p onClick={() => {
                             setCurrentAuction(auction.id);
+                            sessionStorage.setItem('onPage', 'auctionInfo');
                             setOnPage('auctionInfo');
                             setCalledFrom('profile');
                         }}>{auction.title}</p>
@@ -94,7 +107,10 @@ function Profile({ userData, setUserData, setOnPage, setCurrentAuction, setCalle
                     <p className="no-lots">You haven't participated in any lots</p>
                 )}
             </div>
-            <button className="create-lot-btn" type='button' onClick={() => setOnPage('allAuctions')}>All lots</button>
+            <button className="create-lot-btn" type='button' onClick={() => {
+                sessionStorage.setItem('onPage', 'allAuctions');
+                setOnPage('allAuctions');
+                }}>All lots</button>
         </div>
         </>
     )

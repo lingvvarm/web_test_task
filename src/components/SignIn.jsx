@@ -13,11 +13,14 @@ function SignIn({ setOnPage, setUserData }) {
     function signIn(currForm) {
         login(currForm)
             .then((data) => {
+                const userDataString = JSON.stringify(data);
+                sessionStorage.setItem('userData', userDataString)
                 setUserData(data);
+                sessionStorage.setItem('onPage', 'profile');
                 setOnPage('profile');
             })
             .catch((error) => {
-                alert('Temporary app problems. Please try again.');
+                alert('Invalid credentials.');
             });
     }
 
@@ -28,7 +31,10 @@ function SignIn({ setOnPage, setUserData }) {
 
     return (
         <>
-        <button className="back-btn" type='button' onClick={() => {setOnPage('init')}}>
+        <button className="back-btn" type='button' onClick={() => {
+            sessionStorage.setItem('onPage', 'init');
+            setOnPage('init');
+            }}>
             <Icon className="back-icon" path={mdiChevronLeftCircle} />
             <p className="back-text">Back</p>
         </button>
@@ -70,7 +76,10 @@ function SignIn({ setOnPage, setUserData }) {
             </form>
             <div className="not-have-account-texts">
                 <div className="not-have-account-text1">Don't have an account?</div>
-                <a className="not-have-account-text2" onClick={() => setOnPage('signUp')}>Sign up</a>
+                <a className="not-have-account-text2" onClick={() => {
+                    sessionStorage.setItem('onPage', 'signUp');
+                    setOnPage('signUp');
+                    }}>Sign up</a>
             </div>
         </div>
         </>

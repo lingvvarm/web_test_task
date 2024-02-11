@@ -31,6 +31,10 @@
     background-color: #5c6a50;
     border-radius: 12px;
     padding: 10px 10px;
+    width: 350px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .all-auction-text {

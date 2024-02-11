@@ -17,11 +17,16 @@
 //   width: 100%;
 // }
 
-.app-container-signUp, .app-container-signIn {
+.app-container-signUp, .app-container-signIn, .app-container-auctionInfo, .app-container-profile {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
   width: 100%;
+}
+
+.app-container-auctionInfo, .app-container-profile {
+  padding-top: 100px;
+  text-align: center;
 }

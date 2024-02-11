@@ -15,10 +15,11 @@ function SignUp({ setOnPage, setUserData }) {
             .then((data) => {
                 console.log(data);
                 setUserData({username: data.username, tokens: {...data.tokens}});
+                sessionStorage.setItem('onPage', 'profile');
                 setOnPage('profile');
             })
             .catch((error) => {
-                alert('User with this username already exists.');
+                alert('Sign up error. Try again later.');
             });
     }
 
@@ -34,7 +35,10 @@ function SignUp({ setOnPage, setUserData }) {
 
     return (
         <>
-        <button className="back-btn" type='button' onClick={() => {setOnPage('init')}}>
+        <button className="back-btn" type='button' onClick={() => {
+            sessionStorage.setItem('onPage', 'init');
+            setOnPage('init');
+            }}>
             <Icon className="back-icon" path={mdiChevronLeftCircle} />
             <p className="back-text">Back</p>
         </button>
@@ -78,6 +82,11 @@ function SignUp({ setOnPage, setUserData }) {
                         alert ('Password must contain at least 6 characters.');
                         return;
                     }
+                    const regex = /^[a-zA-Z0-9_]+$/
+                    if (!regex.test(currForm.username)) {
+                        alert('Username must contain only letters, numbers and underscores.');
+                        return;
+                    }
                     signUp(currForm);
                 }}>Sign up</button>
             </form>
@@ -92,7 +101,10 @@ function SignUp({ setOnPage, setUserData }) {
             </div>
             <div className="have-account-texts">
                 <div className="have-account-text1">Have an account?</div>
-                <a className="have-account-text2" onClick={() => setOnPage('signIn')}>Sign in</a>
+                <a className="have-account-text2" onClick={() => {
+                    sessionStorage.setItem('onPage', 'signUp');
+                    setOnPage('signIn');
+                    }}>Sign in</a>
             </div>
         </div>
         </>

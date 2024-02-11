@@ -2,17 +2,17 @@ import { useState } from "react";
 import ControlledInput from "./ControlledInput";
 import ImageInput from "./ImageInput";
 import '../styles/CreateAuction.scss'
-import { create_auction, read_auction, delete_auction, profile, upload_image, delete_image } from "../api/auctionApi";
+import { create_auction, upload_image } from "../api/auctionApi";
 
-function CreateAuction({ setOnPage, userData }) {
+function CreateAuction({ setOnPage, userData, setUserData }) {
     const [currForm, setCurrForm] = useState({title: '', description: '', start_bid: '', bid_step: ''});
     const [auctionImages, setAuctionImages] = useState([]);
 
     async function create_auction_and_images() {
-        const auction = await create_auction(currForm, userData.tokens.access);
+        const auction = await create_auction(userData, setUserData, currForm);
         const auction_id = auction.id;
         auctionImages.map(async function(image) {
-            const image_sent = await upload_image(userData.tokens.access, image, auction_id);
+            const image_sent = await upload_image(userData, setUserData, image, auction_id);
         });
     }
 
@@ -20,16 +20,33 @@ function CreateAuction({ setOnPage, userData }) {
         <>
          <nav className='main-nav'>
                 <div className="nav-btns">
-                    <button className='nav-btn' type='button' onClick={() => {setOnPage('init')}}>About auction</button>
-                    <button className='nav-btn' type='button' onClick={() => {setOnPage('allAuctions')}}>All lots</button>
+                    <button className='nav-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'init');
+                        setOnPage('init');
+                        }}>About auction</button>
+                    <button className='nav-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'allAuctions');
+                        setOnPage('allAuctions');
+                        }}>All lots</button>
                 </div>
                 <div className="profile-btns">
-                {userData.username ? (
-                    <p className="profile-btn">{userData.username}</p>
+                {userData ? (
+                    <p className="profile-btn" onClick={() => {
+                        sessionStorage.setItem('onPage', 'profile');
+                        setOnPage('profile');
+                    }}>{userData.username}</p>
                 ) : (
-                    <button className='profile-btn' type='button' onClick={() => {setOnPage('signUp')}}>Register</button> / <button className='profile-btn' type='button' onClick={() => {setOnPage('signIn')}}>Login</button>
+                    <>
+                    <button className='profile-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'signUp');
+                        setOnPage('signUp');
+                    }}>Register</button> / 
+                    <button className='profile-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'signIn');
+                        setOnPage('signIn');
+                    }}>Login</button>
+                    </>
                 )}
-                {/* <button className='profile-btn' type='button' onClick={() => {setOnPage('signUp')}}>Register</button> / <button className='profile-btn' type='button' onClick={() => {setOnPage('signIn')}}>Login</button> */}
                 </div>
             </nav>
         <div className="form-block">
@@ -55,10 +72,31 @@ function CreateAuction({ setOnPage, userData }) {
             <ImageInput auctionImages={auctionImages} setAuctionImages={setAuctionImages}/>
             <div className="create-btns-block">
                 <button className="create-btn" type="button" onClick={() => {
+                        const integerRegex =/^[1-9]\d*$/;
+                        if (auctionImages.length > 4) {
+                            alert('You can upload maximum 4 images');
+                            return;
+                        }
+                        if (currForm.title.length === 0 || currForm.description.length === 0 || currForm.start_bid.length === 0 || currForm.bid_step.length === 0) {
+                            alert('All fields should be filled.');
+                            return;
+                        }
+                        if (!integerRegex.test(currForm.start_bid)) {
+                            alert('Start bid must be integer');
+                            return;
+                        }
+                        if (!integerRegex.test(currForm.bid_step)) {
+                            alert('Bid step must be integer');
+                            return;
+                        }
                         create_auction_and_images();
+                        sessionStorage.setItem('onPage', 'profile');
                         setOnPage('profile');
                     }}>Create</button>
-                <button className="create-btn" type='button' onClick={() => setOnPage('profile')}>Back</button>
+                <button className="create-btn" type='button' onClick={() => {
+                    sessionStorage.setItem('onPage', 'profile');
+                    setOnPage('profile');
+                    }}>Back</button>
             </div>
         </div>
         </>

@@ -1,10 +1,9 @@
-import { read_auction } from "../api/auctionApi"
+import { read_auction, make_bid } from "../api/auctionApi"
 import { useState, useEffect } from "react"
 import ControlledInput from "./ControlledInput"
-import { make_bid } from "../api/auctionApi"
 import '../styles/AuctionInfo.scss'
 
-function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
+function AuctionInfo({ setOnPage, auction_id, called_from, userData, setUserData }) {
     const [auctionInfo, setAuctionInfo] = useState(null);
     const [currForm, setCurrForm] = useState({});
     const [bitMade, setBitMade] = useState(false);
@@ -30,7 +29,7 @@ function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
             alert("You can't bid in your own auction!");
             return;
         }
-        let response = await make_bid(access, username, bid, auction_id);
+        let response = await make_bid(userData, setUserData, username, bid, auction_id);
         if (typeof response[0] === 'string') alert(response);
         else {
             alert('Bid successfull');
@@ -42,16 +41,33 @@ function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
         <>
         <nav className='main-nav'>
                 <div className="nav-btns">
-                    <button className='nav-btn' type='button' onClick={() => {setOnPage('init')}}>About auction</button>
-                    <button className='nav-btn' type='button' onClick={() => {setOnPage('allAuctions')}}>All lots</button>
+                    <button className='nav-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'init');
+                        setOnPage('init');
+                        }}>About auction</button>
+                    <button className='nav-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'allAuctions');
+                        setOnPage('allAuctions');
+                        }}>All lots</button>
                 </div>
                 <div className="profile-btns">
-                {userData.username ? (
-                    <p className="profile-btn">{userData.username}</p>
+                {userData ? (
+                    <p className="profile-btn" onClick={() => {
+                        sessionStorage.setItem('onPage', 'profile');
+                        setOnPage('profile');
+                    }}>{userData.username}</p>
                 ) : (
-                    <button className='profile-btn' type='button' onClick={() => {setOnPage('signUp')}}>Register</button> / <button className='profile-btn' type='button' onClick={() => {setOnPage('signIn')}}>Login</button>
+                    <>
+                    <button className='profile-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'signUp');
+                        setOnPage('signUp');
+                    }}>Register</button> / 
+                    <button className='profile-btn' type='button' onClick={() => {
+                        sessionStorage.setItem('onPage', 'signIn');
+                        setOnPage('signIn');
+                    }}>Login</button>
+                    </>
                 )}
-                {/* <button className='profile-btn' type='button' onClick={() => {setOnPage('signUp')}}>Register</button> / <button className='profile-btn' type='button' onClick={() => {setOnPage('signIn')}}>Login</button> */}
                 </div>
             </nav>
             <div className="info-block">
@@ -61,8 +77,8 @@ function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
                             <div className="auction-info-text">
                                 <p className="auction-info-title">{auctionInfo.title}</p>
                                 <p className="auction-description">{auctionInfo.description}</p>
-                                <p className="auction-start-bid">Start bid: {auctionInfo.start_bid}</p>
-                                <p className="auction-bid-step">Bid step: {auctionInfo.bid_step}</p>
+                                <p className="auction-start-bid">Start bid: ${auctionInfo.start_bid}</p>
+                                <p className="auction-bid-step">Bid step: ${auctionInfo.bid_step}</p>
                                 <p className="auction-info-owner">Owner: {auctionInfo.owner.username}</p>
                             </div>
                             <div className="auction-images">
@@ -70,7 +86,7 @@ function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
                                     return <img key={elem.id} src={elem.image} alt="auction-image" />
                                 })}
                             </div>
-                            <p className="highest-bid-text">Highest bid now is: {highestBid}</p>
+                            <p className="highest-bid-text">Highest bid now is: ${highestBid}</p>
                             <br />
                             <p className="aution-participants-text">Auction participants</p>
                             <div className="participants">
@@ -82,7 +98,7 @@ function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
                             <p className="bids-history-text">Bidding history</p>
                             <div className="bids-history">
                                 {auctionInfo.bids.map((bid, index) => (
-                                    <p key={bid.id}>{index + 1}. {bid.user.username}: {bid.bid} </p>
+                                    <p key={bid.id}>{index + 1}. {bid.user.username}: ${bid.bid} </p>
                                 ))}
                             </div>
                             <p className="bids-history-text">Make your bid</p>
@@ -94,9 +110,16 @@ function AuctionInfo({ setOnPage, auction_id, called_from, userData }) {
                                             alert('You need to sign in to make bids');
                                             return;
                                         }
-                                        else bid(userData.tokens.access, userData.username, currForm.bid, auction_id);
+                                        const integerRegex =/^[1-9]\d*$/;
+                                        if (!integerRegex.test(currForm.bid)) {
+                                            alert('You need to enter only integer values here');
+                                            return;
+                                        }
+                                        bid(userData.tokens.access, userData.username, currForm.bid, auction_id);
                                     }}>Make bid</button>
-                                    <button className="bid-btn" type="button" onClick={() => setOnPage(called_from)}>Back</button>
+                                    <button className="bid-btn" type="button" onClick={() => {
+                                        sessionStorage.setItem('onPage', called_from);
+                                        setOnPage(called_from)}}>Back</button>
                                 </div>
 
                             </div>

@@ -36,7 +36,6 @@ function ImageInput({ auctionImages, setAuctionImages }) {
           <input type="file" id="file" multiple accept="image/png, image/jpeg, image/jpg" onChange={handleImageChange} />
           <i></i> Upload photos
         </label> 
-            {/* <input type="file" id="file" multiple accept="image/png, image/jpeg, image/jpg" onChange={handleImageChange} /> */}
             <div className="result">{renderPhotos(selectedFiles)}</div>
         </>
       );

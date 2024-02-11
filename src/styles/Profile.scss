@@ -21,7 +21,6 @@
 
 .profile-block {
     margin-top: 100px;
-    margin-left: 40px;
     color: white;
 }
 
@@ -39,7 +38,6 @@
 
 .my-auctions-block {
     margin-top: 50px;
-    margin-left: 40px;
 }
 
 .my-auctions-header, .my-participated-header {
@@ -64,9 +62,9 @@
     padding: 5px 10px;
     color: white;
     font-weight: bold;
-    width: 60%;
     justify-content: space-between;
     min-width: 400px;
+    gap: 40px;
 
     p {
         cursor: pointer;
@@ -115,6 +113,8 @@
     background-color: #47513D;
 }
 
-.my-participated-block {
-    margin-left: 40px;
+.my-participateds {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

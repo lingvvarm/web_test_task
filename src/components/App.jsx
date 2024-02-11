@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import InitPage from './InitPage'
 import SignUp from './SignUp'
 import SignIn from './SignIn'
@@ -11,23 +11,41 @@ import '../styles/App.scss'
 
 function App() {
   const [onPage, setOnPage] = useState('init');
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState(null);
   const [currentAuction, setCurrentAuction] = useState(null);
   const [calledFrom, setCalledFrom] = useState(null);
   const [currentEditedAuction, setCurrentEditedAuction] = useState(null);
 
+  useEffect(() => {
+    const storedOnPage = localStorage.getItem('onPage');
+    if (storedOnPage) {
+      setOnPage(storedOnPage);
+    }
+
+    const storedCurrentAuction = localStorage.getItem('currentAuction');
+    if (storedCurrentAuction) {
+      setCurrentAuction(storedCurrentAuction);
+    }
+
+    const storedUserDataString = localStorage.getItem('userData');
+    if (storedUserDataString) {
+      const storedUserData = JSON.parse(storedUserDataString);
+      setUserData(storedUserData);
+    }
+  }, [])
+  
 
   return (
     <div className={`app-container-${onPage}`}>
-    {onPage === 'init' && <InitPage setOnPage={setOnPage}/>}
+    {onPage === 'init' && <InitPage setOnPage={setOnPage} userData={userData}/>}
     {onPage === 'signUp' && <SignUp setOnPage={setOnPage} setUserData={setUserData}/>}
     {onPage === 'signIn' && <SignIn setOnPage={setOnPage} setUserData={setUserData}/>}
     {onPage === 'profile' && <Profile userData={userData} setUserData={setUserData} setOnPage={setOnPage} setCurrentAuction={setCurrentAuction} setCalledFrom={setCalledFrom} 
     setCurrentEditedAuction={setCurrentEditedAuction}/>}
-    {onPage === 'createAuction' && <CreateAuction setOnPage={setOnPage} userData={userData}/>}
-    {onPage === 'auctionInfo' && <AuctionInfo setOnPage={setOnPage} auction_id={currentAuction} called_from={calledFrom} userData={userData}/>}
-    {onPage === 'allAuctions' && <AllAuctions setOnPage={setOnPage} setCurrentAuction={setCurrentAuction} setCalledFrom={setCalledFrom}/>}
-    {onPage === 'editAuction' && <EditAuction setOnPage={setOnPage} auction_id={currentEditedAuction} userData={userData}/>}
+    {onPage === 'createAuction' && <CreateAuction setOnPage={setOnPage} userData={userData} setUserData={setUserData}/>}
+    {onPage === 'auctionInfo' && <AuctionInfo setOnPage={setOnPage} auction_id={currentAuction} called_from={calledFrom} userData={userData} setUserData={setUserData}/>}
+    {onPage === 'allAuctions' && <AllAuctions setOnPage={setOnPage} setCurrentAuction={setCurrentAuction} setCalledFrom={setCalledFrom} userData={userData}/>}
+    {onPage === 'editAuction' && <EditAuction setOnPage={setOnPage} auction_id={currentEditedAuction} userData={userData} setUserData={setUserData}/>}
     </div>
   )
 }

@@ -43,11 +43,11 @@ async function logout(refresh, access) {
     }
 }
 
-async function refresh_token(refresh) {
+async function refresh_token(access, refresh) {
     const apiUrl = AUTH_BASE_URL + '/token/refresh/';
-    const requestBody = {refresh};
+    const requestBody = {refresh: refresh};
     try {
-        const response = await fetch(apiUrl, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(requestBody)});
+        const response = await fetch(apiUrl, {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${access}`}, body: JSON.stringify(requestBody)});
         const data = await response.json();
         return data;
     } catch (error) {
